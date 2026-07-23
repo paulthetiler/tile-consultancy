@@ -1,0 +1,127 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   Design tokens — the single source of truth for colour & type.
+   Light is the primary world; dark is a true inverted theme built
+   from the same tokens. The viewer's theme toggle stamps
+   data-theme on <html> and must win over the media query.
+   ============================================================ */
+:root {
+  --paper: #f1f0ec;
+  --paper-raised: #fbfbf9;
+  --ink: #17181c;
+  --ink-70: #43454c;
+  --ink-40: #83858d;
+  --hairline: #dedcd5;
+  --hairline-2: #e9e7e0;
+  --graphite: #1c1e24;
+  --on-graphite: #ecebe4;
+  --signal: #c8102e;
+
+  /* Type — high-quality cross-platform stacks now; swap for licensed
+     faces later in one place (grotesque display, old-style serif for
+     reports/long-form, technical mono for data & annotation). */
+  --font-grotesk: "Helvetica Neue", Helvetica, "Inter", "Arial Nova", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Charter, Georgia, "Times New Roman", serif;
+  --font-mono: ui-monospace, "SF Mono", "SFMono-Regular", Menlo, "Cascadia Code", "Roboto Mono", Consolas, monospace;
+
+  --ease-settle: cubic-bezier(0.16, 1, 0.3, 1);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #131419;
+    --paper-raised: #191b21;
+    --ink: #ecebe4;
+    --ink-70: #afb0ab;
+    --ink-40: #74767c;
+    --hairline: #2a2c33;
+    --hairline-2: #23252b;
+    --graphite: #0c0d10;
+    --on-graphite: #ecebe4;
+    --signal: #e7495c;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --paper: #131419;
+  --paper-raised: #191b21;
+  --ink: #ecebe4;
+  --ink-70: #afb0ab;
+  --ink-40: #74767c;
+  --hairline: #2a2c33;
+  --hairline-2: #23252b;
+  --graphite: #0c0d10;
+  --on-graphite: #ecebe4;
+  --signal: #e7495c;
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  --paper: #f1f0ec;
+  --paper-raised: #fbfbf9;
+  --ink: #17181c;
+  --ink-70: #43454c;
+  --ink-40: #83858d;
+  --hairline: #dedcd5;
+  --hairline-2: #e9e7e0;
+  --graphite: #1c1e24;
+  --on-graphite: #ecebe4;
+  --signal: #c8102e;
+  color-scheme: light;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-grotesk);
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    letter-spacing: -0.006em;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-weight: 550;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  ::selection {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 3px;
+  }
+}
+
+@layer utilities {
+  /* Monospaced technical label — overlines, figure numbers, data. */
+  .u-label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .u-tnum {
+    font-variant-numeric: tabular-nums;
+  }
+}
