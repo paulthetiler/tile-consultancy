@@ -1,0 +1,602 @@
+<title>Design Direction — Commercial Tiling & Surface Systems Consultancy</title>
+<style>
+  :root {
+    /* ---- Light (paper & ink) ---- */
+    --paper:        #F1F0EC;
+    --paper-raised: #FBFBF9;
+    --ink:          #17181C;
+    --ink-70:       #43454C;
+    --ink-40:       #83858D;
+    --hairline:     #DEDCD5;
+    --hairline-2:   #E9E7E0;
+    --graphite:     #1C1E24;
+    --on-graphite:  #ECEBE4;
+    --on-graphite-40:#8A8C8F;
+    --signal:       #C8102E;
+
+    --maxw: 1180px;
+    --gutter: clamp(1.25rem, 4vw, 4.5rem);
+
+    --f-grotesk: "Helvetica Neue", Helvetica, "Inter", "Arial Nova", "Segoe UI", system-ui, -apple-system, sans-serif;
+    --f-mono: ui-monospace, "SF Mono", "SFMono-Regular", "Menlo", "Cascadia Code", "Roboto Mono", "Consolas", monospace;
+
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper:        #131419;
+      --paper-raised: #191B21;
+      --ink:          #ECEBE4;
+      --ink-70:       #AFB0AB;
+      --ink-40:       #74767C;
+      --hairline:     #2A2C33;
+      --hairline-2:   #23252B;
+      --graphite:     #0C0D10;
+      --on-graphite:  #ECEBE4;
+      --on-graphite-40:#74767C;
+      --signal:       #E7495C;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:        #131419;
+    --paper-raised: #191B21;
+    --ink:          #ECEBE4;
+    --ink-70:       #AFB0AB;
+    --ink-40:       #74767C;
+    --hairline:     #2A2C33;
+    --hairline-2:   #23252B;
+    --graphite:     #0C0D10;
+    --on-graphite:  #ECEBE4;
+    --on-graphite-40:#74767C;
+    --signal:       #E7495C;
+  }
+  :root[data-theme="light"] {
+    --paper:        #F1F0EC;
+    --paper-raised: #FBFBF9;
+    --ink:          #17181C;
+    --ink-70:       #43454C;
+    --ink-40:       #83858D;
+    --hairline:     #DEDCD5;
+    --hairline-2:   #E9E7E0;
+    --graphite:     #1C1E24;
+    --on-graphite:  #ECEBE4;
+    --on-graphite-40:#8A8C8F;
+    --signal:       #C8102E;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--f-grotesk);
+    font-weight: 400;
+    line-height: 1.65;
+    font-size: clamp(1rem, 0.96rem + 0.2vw, 1.0625rem);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    letter-spacing: -0.006em;
+  }
+
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding-inline: var(--gutter); }
+  .full { width: 100%; }
+
+  /* ---- Type roles ---- */
+  .mono {
+    font-family: var(--f-mono);
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+  .label {
+    font-family: var(--f-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-40);
+    font-variant-numeric: tabular-nums;
+  }
+  .plate-no { color: var(--signal); }
+
+  h1, h2, h3 { font-weight: 550; letter-spacing: -0.02em; text-wrap: balance; margin: 0; }
+  .display {
+    font-size: clamp(2.5rem, 1.2rem + 6vw, 5.25rem);
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    font-weight: 560;
+  }
+  .h2 { font-size: clamp(1.75rem, 1.2rem + 2vw, 2.75rem); line-height: 1.06; letter-spacing: -0.028em; }
+  .h3 { font-size: clamp(1.15rem, 1rem + 0.6vw, 1.4rem); line-height: 1.2; letter-spacing: -0.02em; }
+  .lead {
+    font-size: clamp(1.125rem, 1rem + 0.6vw, 1.4rem);
+    line-height: 1.5;
+    color: var(--ink-70);
+    letter-spacing: -0.012em;
+    max-width: 34ch;
+  }
+  p { margin: 0; max-width: 62ch; }
+  .measure { color: var(--ink-70); }
+
+  /* ---- Rules & rhythm ---- */
+  .rule { height: 1px; background: var(--hairline); border: 0; }
+  section { padding-block: clamp(4rem, 2rem + 9vw, 9rem); }
+  .stack > * + * { margin-top: var(--sp, 1.5rem); }
+
+  /* ---- Report cover bar ---- */
+  .coverbar {
+    border-bottom: 1px solid var(--hairline);
+    padding-block: 0.9rem;
+  }
+  .coverbar .wrap {
+    display: flex; flex-wrap: wrap; gap: 0.75rem 2rem; align-items: baseline;
+    justify-content: space-between;
+  }
+  .coverbar .label { color: var(--ink-40); }
+  .coverbar strong { color: var(--ink); font-weight: 400; }
+  .dot { display:inline-block; width:6px;height:6px;background:var(--signal);border-radius:50%; margin-right:0.5rem; vertical-align: middle; }
+
+  /* ---- Hero ---- */
+  .hero { padding-top: clamp(3.5rem, 2rem + 6vw, 7rem); padding-bottom: 0; }
+  .hero .eyebrow { display:flex; align-items:center; gap: 1rem; margin-bottom: clamp(1.5rem,4vw,2.5rem); }
+  .hero .eyebrow .rule { flex: 1; }
+  .hero .lead { margin-top: clamp(1.5rem, 3vw, 2.25rem); max-width: 40ch; }
+
+  /* Graticule / calibration strip */
+  .graticule {
+    margin-top: clamp(2.5rem, 5vw, 4.5rem);
+    height: 46px;
+    position: relative;
+    border-top: 1px solid var(--ink);
+    background:
+      repeating-linear-gradient(90deg, var(--hairline) 0, var(--hairline) 1px, transparent 1px, transparent 20px);
+    background-position: top left;
+    background-size: 20px 9px;
+    background-repeat: repeat-x;
+  }
+  .graticule::after {
+    content:""; position:absolute; top:0; left:0; right:0; height: 18px;
+    background:
+      repeating-linear-gradient(90deg, var(--ink) 0, var(--ink) 1px, transparent 1px, transparent 100px);
+    opacity: 0.85;
+  }
+  .graticule .index {
+    position:absolute; top:-1px; left: 61.8%;
+    width: 1px; height: 30px; background: var(--signal);
+  }
+  .graticule .index::before {
+    content:""; position:absolute; top:-4px; left:-3px; width:7px; height:7px;
+    background: var(--signal); border-radius: 50%;
+  }
+  .graticule .readout {
+    position:absolute; top: 24px; left: 61.8%; transform: translateX(-50%);
+    color: var(--signal); font-size: 0.6875rem; white-space: nowrap;
+  }
+
+  /* ---- Section head ---- */
+  .shead { display:flex; align-items:baseline; gap: 1.25rem; margin-bottom: clamp(2rem,4vw,3rem); }
+  .shead .num { flex-shrink:0; }
+  .shead .rule { flex:1; align-self:center; }
+
+  /* ---- Grids ---- */
+  .cols { display:grid; gap: clamp(1.5rem, 3vw, 3rem); }
+  @media (min-width: 720px){ .cols-2 { grid-template-columns: 1fr 1fr; } .cols-3 { grid-template-columns: repeat(3,1fr);} }
+  .split { display:grid; gap: clamp(2rem,5vw,4.5rem); }
+  @media (min-width: 860px){ .split { grid-template-columns: 0.85fr 1.15fr; } }
+
+  /* ---- Colour swatches ---- */
+  .swatches { display:grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--hairline); border: 1px solid var(--hairline); }
+  @media (min-width: 640px){ .swatches { grid-template-columns: repeat(4, 1fr); } }
+  .sw { background: var(--paper); padding: 1rem 1rem 0.9rem; display:flex; flex-direction:column; gap: 0.75rem; min-height: 132px; }
+  .chip { height: 44px; border: 1px solid rgba(127,127,127,0.18); }
+  .sw .name { color: var(--ink); font-size: 0.8125rem; }
+  .sw .hex { color: var(--ink-40); }
+  .sw .role { color: var(--ink-70); font-size: 0.8125rem; line-height:1.35; }
+
+  /* ---- Type specimen ---- */
+  .spec { border-top: 1px solid var(--hairline); padding-top: 1.5rem; margin-top: 1.5rem; }
+  .spec:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
+  .spec .big { line-height: 1.0; letter-spacing: -0.03em; color: var(--ink); }
+  table.scale { width:100%; border-collapse: collapse; font-size: 0.875rem; }
+  table.scale td, table.scale th { text-align: left; padding: 0.55rem 0.75rem 0.55rem 0; border-bottom: 1px solid var(--hairline); vertical-align: baseline; }
+  table.scale th { color: var(--ink-40); font-weight:400; }
+  table.scale .k { color: var(--signal); }
+  .scale-wrap { overflow-x: auto; }
+
+  /* ---- Modes (Assess / Investigate / Specify) ---- */
+  .mode { border-top: 1px solid var(--ink); padding-top: 1rem; }
+  .mode h3 { margin-top: 0.4rem; }
+  .mode ul { list-style: none; margin: 1.25rem 0 0; padding: 0; }
+  .mode li { padding: 0.55rem 0; border-bottom: 1px solid var(--hairline); color: var(--ink-70); font-size: 0.9375rem; }
+  .mode li:last-child { border-bottom: 0; }
+  .mode .verb { color: var(--ink-40); }
+
+  /* ---- Forensic figure ---- */
+  .figure {
+    background: var(--paper-raised);
+    border: 1px solid var(--hairline);
+    padding: clamp(1rem, 3vw, 2rem);
+  }
+  .figure figcaption { margin-top: 1rem; display:flex; gap: 0.5rem 1.5rem; flex-wrap: wrap; align-items: baseline; }
+  .fig-svg-wrap { overflow-x: auto; }
+  svg.tech { display:block; width:100%; height:auto; min-width: 420px; }
+  .tech .stroke { stroke: var(--ink); }
+  .tech .thin   { stroke: var(--ink-40); }
+  .tech .fillhair { fill: var(--hairline-2); }
+  .tech .fillsurf { fill: var(--paper); }
+  .tech .txt { fill: var(--ink-70); font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.02em; }
+  .tech .txt-ink { fill: var(--ink); }
+  .tech .sig { stroke: var(--signal); }
+  .tech .sigfill { fill: var(--signal); }
+  .tech .sigtxt { fill: var(--signal); font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.04em; }
+  .flag { color: var(--signal); border: 1px solid var(--signal); padding: 0.15rem 0.5rem; font-size: 0.625rem; letter-spacing: 0.14em; text-transform: uppercase; }
+
+  /* ---- Spacing demo ---- */
+  .ruler { display:flex; align-items:flex-end; gap: 6px; height: 120px; }
+  .ruler .bar { width: clamp(20px, 4vw, 34px); background: var(--ink); position: relative; }
+  .ruler .bar span { position:absolute; bottom: -1.4rem; left: 0; right: 0; text-align:center; color: var(--ink-40); font-size: 0.625rem; }
+  .gridcard { border: 1px solid var(--hairline); background:
+    repeating-linear-gradient(90deg, transparent 0, transparent calc((100% - 11px)/12), var(--hairline-2) calc((100% - 11px)/12), var(--hairline-2) calc((100% - 11px)/12 + 1px));
+    padding: 1.25rem; min-height: 120px; }
+
+  /* ---- Inverted block ---- */
+  .invert { background: var(--graphite); color: var(--on-graphite); }
+  .invert .label { color: var(--on-graphite-40); }
+  .invert .rule { background: rgba(255,255,255,0.14); }
+  .invert .measure { color: var(--on-graphite); opacity: 0.82; }
+  .invert .h2 { color: var(--on-graphite); }
+
+  /* ---- Motion tokens demo ---- */
+  .chips { display:flex; flex-wrap:wrap; gap: 0.5rem; }
+  .tok { border:1px solid var(--hairline); padding: 0.4rem 0.7rem; font-size:0.75rem; color: var(--ink-70); }
+  .tok b { color: var(--ink); font-weight: 400; }
+
+  /* ---- Footer ---- */
+  .foot { border-top: 1px solid var(--ink); }
+  .foot ol { margin: 1.5rem 0 0; padding-left: 0; list-style: none; counter-reset: d; }
+  .foot li { padding: 0.85rem 0; border-bottom: 1px solid var(--hairline); display:flex; gap: 1rem; align-items:baseline; }
+  .foot li::before { counter-increment: d; content: counter(d, decimal-leading-zero); color: var(--signal); font-family: var(--f-mono); font-size: 0.75rem; }
+  .foot li:last-child { border-bottom: 0; }
+
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid var(--signal); outline-offset: 3px; }
+
+  /* ---- Reveal ---- */
+  .reveal { opacity: 0; transform: translateY(14px); transition: opacity 0.6s var(--ease), transform 0.6s var(--ease); }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+  }
+</style>
+
+<!-- ===================== COVER BAR ===================== -->
+<div class="coverbar">
+  <div class="wrap">
+    <span class="label"><span class="dot"></span>Design Direction — Visual Language</span>
+    <span class="label">DOC&nbsp; <strong>DD‑01</strong> &nbsp;·&nbsp; REV&nbsp; <strong>A</strong> &nbsp;·&nbsp; PHASE&nbsp; <strong>Discovery</strong> &nbsp;·&nbsp; STATUS&nbsp; <strong>For review</strong></span>
+  </div>
+</div>
+
+<!-- ===================== HERO ===================== -->
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">
+      <span class="label">Commercial Tiling &amp; Surface Systems Consultancy</span>
+      <hr class="rule" aria-hidden="true">
+      <span class="label">Fig. 00</span>
+    </div>
+    <h1 class="display">The independent<br>authority on<br>commercial tiling.</h1>
+    <p class="lead">Inspection, investigation and technical reporting — for the people who build, own and adjudicate. A visual language built like a measuring instrument: calibrated, evidence-led, quiet.</p>
+
+    <div class="graticule" aria-hidden="true">
+      <span class="index"></span>
+      <span class="readout mono">Δ 2.4&nbsp;mm</span>
+    </div>
+  </div>
+</header>
+
+<!-- ===================== 00 CONCEPT ===================== -->
+<section>
+  <div class="wrap">
+    <div class="shead">
+      <span class="label num"><span class="plate-no">PLATE 00</span></span>
+      <hr class="rule" aria-hidden="true">
+      <span class="label">The concept</span>
+    </div>
+    <div class="split reveal">
+      <h2 class="h2">The Instrument.</h2>
+      <div class="stack" style="--sp:1.25rem">
+        <p class="measure">The reference points are <span style="color:var(--ink)">Apple × Foster + Partners × Arup × Leica</span> — but the organising idea is drawn from the last of them. This practice does not design buildings; it examines surfaces at close range and finds, to a tolerance, what is wrong.</p>
+        <p class="measure">So the design is a <span style="color:var(--ink)">precision measuring instrument</span>: near-monochrome, gridded, annotated, tolerant to fractions of a millimetre — with a single index-red used the way it is used on a calibrated tool. It marks. It points. It never sells. Restraint is not a style choice here; for a practice whose highest-value work is independent expert testimony, restraint <em>is</em> the credibility.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule full" aria-hidden="true">
+
+<!-- ===================== 01 COLOUR ===================== -->
+<section>
+  <div class="wrap">
+    <div class="shead">
+      <span class="label num"><span class="plate-no">PLATE 01</span></span>
+      <hr class="rule" aria-hidden="true">
+      <span class="label">Colour — paper, ink &amp; one signal</span>
+    </div>
+    <div class="stack reveal" style="--sp:2rem">
+      <p class="measure">Ninety-five per cent of every screen is warm-neutral paper and near-black ink. Pure white reads as unstyled default; a warmed neutral reads as chosen. The instrument red is held to <span style="color:var(--ink)">1–2%</span> of any view — annotation marks, active states, focus. The moment it becomes a “brand colour” splashed on buttons, the work becomes a template.</p>
+      <div class="swatches">
+        <div class="sw"><span class="chip" style="background:#F1F0EC"></span><span class="name mono">paper</span><span class="hex mono">#F1F0EC</span><span class="role">Primary ground</span></div>
+        <div class="sw"><span class="chip" style="background:#17181C"></span><span class="name mono">ink</span><span class="hex mono">#17181C</span><span class="role">Primary text</span></div>
+        <div class="sw"><span class="chip" style="background:#43454C"></span><span class="name mono">ink‑70</span><span class="hex mono">#43454C</span><span class="role">Secondary text</span></div>
+        <div class="sw"><span class="chip" style="background:#DEDCD5"></span><span class="name mono">hairline</span><span class="hex mono">#DEDCD5</span><span class="role">Rules &amp; dividers</span></div>
+        <div class="sw"><span class="chip" style="background:#1C1E24"></span><span class="name mono">graphite</span><span class="hex mono">#1C1E24</span><span class="role">Inverted sections</span></div>
+        <div class="sw"><span class="chip" style="background:#83858D"></span><span class="name mono">ink‑40</span><span class="hex mono">#83858D</span><span class="role">Meta / captions</span></div>
+        <div class="sw"><span class="chip" style="background:#FBFBF9"></span><span class="name mono">paper‑raised</span><span class="hex mono">#FBFBF9</span><span class="role">Minimal surfaces</span></div>
+        <div class="sw"><span class="chip" style="background:#C8102E"></span><span class="name mono plate-no">signal</span><span class="hex mono">#C8102E</span><span class="role">Instrument red — functional only</span></div>
+      </div>
+      <p class="label">All text pairings meet WCAG 2.2 AA · signal never carries meaning alone · a true graphite dark theme is built from the same tokens — toggle your OS or the viewer theme to verify.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="rule full" aria-hidden="true">
+
+<!-- ===================== 02 TYPOGRAPHY ===================== -->
+<section>
+  <div class="wrap">
+    <div class="shead">
+      <span class="label num"><span class="plate-no">PLATE 02</span></span>
+      <hr class="rule" aria-hidden="true">
+      <span class="label">Typography — three voices</span>
+    </div>
+
+    <div class="split">
+      <div class="stack reveal" style="--sp:2.25rem">
+        <div class="spec">
+          <span class="label">Voice 01 — Authority · neo‑grotesque</span>
+          <div class="big" style="font-size:clamp(2.25rem,1.4rem+3.5vw,3.75rem); font-weight:560; margin-top:0.6rem;">Lippage &amp; deflection</div>
+        </div>
+        <div class="spec">
+          <span class="label">Voice 02 — Report · body</span>
+          <p style="margin-top:0.7rem; max-width:46ch;">The wet-area substrate was assessed against BS 5385‑4. Movement provision at the perimeter was found to be discontinuous; measured lippage at the threshold exceeded the stated tolerance.</p>
+        </div>
+        <div class="spec">
+          <span class="label">Voice 03 — Instrument · monospace</span>
+          <div class="mono" style="margin-top:0.7rem; font-size:1rem; color:var(--ink); line-height:1.9;">
+            SPECIMEN&nbsp;&nbsp;WR‑07 / threshold<br>
+            Δ&nbsp;LIPPAGE&nbsp;&nbsp;2.4&nbsp;mm&nbsp;&nbsp;<span class="plate-no">·&nbsp;TOL ±0.5&nbsp;mm</span><br>
+            STANDARD&nbsp;&nbsp;BS&nbsp;5385‑3:2024
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal">
+        <span class="label">Type scale — modular, ruthlessly small</span>
+        <div class="scale-wrap" style="margin-top:1rem;">
+          <table class="scale mono">
+            <thead><tr><th>token</th><th>rem</th><th>use</th></tr></thead>
+            <tbody>
+              <tr><td class="k">display‑xl</td><td>4.5–6.0</td><td>Hero</td></tr>
+              <tr><td class="k">display‑l</td><td>3.00</td><td>Section heads</td></tr>
+              <tr><td class="k">heading‑m</td><td>1.75</td><td>Sub‑heads</td></tr>
+              <tr><td class="k">heading‑s</td><td>1.25</td><td>Titles</td></tr>
+              <tr><td class="k">body‑l</td><td>1.25</td><td>Lead</td></tr>
+              <tr><td class="k">body‑m</td><td>1.06</td><td>Default</td></tr>
+              <tr><td class="k">caption</td><td>0.875</td><td>Captions</td></tr>
+              <tr><td class="k">mono‑label</td><td>0.75</td><td>Overlines, data</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="label" style="margin-top:1.25rem;">Tight leading on display, generous on body, uppercase + wide tracking on mono labels only. Fluid <span class="mono">clamp()</span> from mobile to 4K.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule full" aria-hidden="true">
+
+<!-- ===================== 03 THREE MODES ===================== -->
+<section>
+  <div class="wrap">
+    <div class="shead">
+      <span class="label num"><span class="plate-no">PLATE 03</span></span>
+      <hr class="rule" aria-hidden="true">
+      <span class="label">Layout — the three modes of engagement</span>
+    </div>
+    <p class="measure reveal" style="margin-bottom:clamp(2rem,4vw,3rem); max-width:60ch;">The eight capabilities are grouped into a real sequence — the arc of an engagement, and of a dispute. Numbering here is earned: it encodes order the reader needs.</p>
+    <div class="cols cols-3 reveal">
+      <div class="mode">
+        <span class="label"><span class="plate-no">01</span> &nbsp;/&nbsp; establishing state</span>
+        <h3 class="h3">Assess</h3>
+        <ul>
+          <li><span class="verb mono">→</span>&nbsp; Commercial tile inspections</li>
+          <li><span class="verb mono">→</span>&nbsp; Condition surveys</li>
+          <li><span class="verb mono">→</span>&nbsp; Progress inspections</li>
+        </ul>
+      </div>
+      <div class="mode">
+        <span class="label"><span class="plate-no">02</span> &nbsp;/&nbsp; establishing cause</span>
+        <h3 class="h3">Investigate</h3>
+        <ul>
+          <li><span class="verb mono">→</span>&nbsp; Defect investigations</li>
+          <li><span class="verb mono">→</span>&nbsp; Quality assurance</li>
+          <li><span class="verb mono">→</span>&nbsp; Expert witness services</li>
+        </ul>
+      </div>
+      <div class="mode">
+        <span class="label"><span class="plate-no">03</span> &nbsp;/&nbsp; establishing route</span>
+        <h3 class="h3">Specify</h3>
+        <ul>
+          <li><span class="verb mono">→</span>&nbsp; Technical reporting</li>
+          <li><span class="verb mono">→</span>&nbsp; Remedial specifications</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule full" aria-hidden="true">
+
+<!-- ===================== 04 FORENSIC FIGURE ===================== -->
+<section>
+  <div class="wrap">
+    <div class="shead">
+      <span class="label num"><span class="plate-no">PLATE 04</span></span>
+      <hr class="rule" aria-hidden="true">
+      <span class="label">Image direction — evidence, not architecture</span>
+    </div>
+    <div class="split">
+      <div class="stack reveal" style="--sp:1.25rem">
+        <p class="measure">The category default — glossy photographs of finished buildings — is a trap: generic, and not what this practice does. The ownable, un-fakeable visual asset is the <span style="color:var(--ink)">forensic detail itself</span>, shot like scientific documentation and annotated with measurement.</p>
+        <p class="measure">Below is the treatment applied to a technical figure rather than a photograph — the same annotation language carries across macro imagery, thermographic scans and hairline diagrams. The red appears only where a reading falls out of tolerance. <span class="label" style="display:inline">See Plate&nbsp;02, Voice&nbsp;03.</span></p>
+        <span class="flag mono">Out of tolerance</span>
+      </div>
+
+      <figure class="figure reveal" style="margin:0;">
+        <div class="fig-svg-wrap">
+          <svg class="tech" viewBox="0 0 560 300" role="img" aria-label="Technical section: lippage of 2.4mm at a tile threshold, exceeding the BS 5385-3 tolerance of plus or minus 0.5mm.">
+            <!-- substrate / screed -->
+            <rect x="40" y="210" width="480" height="46" class="fillhair stroke" stroke-width="1"/>
+            <text x="48" y="236" class="txt">SCREED / SUBSTRATE</text>
+            <!-- adhesive bed -->
+            <rect x="40" y="196" width="480" height="14" class="thin" fill="none" stroke-dasharray="2 3" stroke-width="1"/>
+            <!-- left tile (datum) -->
+            <rect x="60" y="150" width="210" height="46" class="fillsurf stroke" stroke-width="1.5"/>
+            <text x="150" y="178" class="txt" text-anchor="middle">TILE A · datum</text>
+            <!-- right tile (raised) -->
+            <rect x="290" y="138" width="210" height="46" class="fillsurf stroke" stroke-width="1.5"/>
+            <text x="395" y="166" class="txt" text-anchor="middle">TILE B · +2.4</text>
+            <!-- joint -->
+            <rect x="270" y="138" width="20" height="58" class="thin" fill="none" stroke-width="1"/>
+            <!-- datum line across from tile A top -->
+            <line x1="60" y1="150" x2="540" y2="150" class="thin" stroke-width="1" stroke-dasharray="3 3"/>
+            <text x="524" y="146" class="txt" text-anchor="end">DATUM 0.0</text>
+            <!-- lippage dimension (red) -->
+            <line x1="512" y1="138" x2="512" y2="150" class="sig" stroke-width="1.5"/>
+            <line x1="506" y1="138" x2="518" y2="138" class="sig" stroke-width="1.5"/>
+            <line x1="506" y1="150" x2="518" y2="150" class="sig" stroke-width="1.5"/>
+            <circle cx="512" cy="138" r="2.5" class="sigfill"/>
+            <text x="500" y="130" class="sigtxt" text-anchor="end">Δ 2.4 mm</text>
+            <!-- graticule scale bottom -->
+            <g>
+              <line x1="40" y1="282" x2="520" y2="282" class="thin" stroke-width="1"/>
+              <line x1="40" y1="278" x2="40" y2="286" class="thin" stroke-width="1"/>
+              <line x1="136" y1="279" x2="136" y2="285" class="thin" stroke-width="1"/>
+              <line x1="232" y1="279" x2="232" y2="285" class="thin" stroke-width="1"/>
+              <line x1="328" y1="279" x2="328" y2="285" class="thin" stroke-width="1"/>
+              <line x1="424" y1="279" x2="424" y2="285" class="thin" stroke-width="1"/>
+              <line x1="520" y1="278" x2="520" y2="286" class="thin" stroke-width="1"/>
+              <text x="40" y="298" class="txt" font-size="10">0</text>
+              <text x="520" y="298" class="txt" font-size="10" text-anchor="end">100 mm</text>
+            </g>
+            <!-- tolerance callout -->
+            <text x="40" y="40" class="txt-ink txt" font-size="13">FIG. 04 — LIPPAGE AT THRESHOLD</text>
+            <text x="40" y="60" class="txt">CERAMIC ON SCREED · WET AREA</text>
+            <text x="40" y="86" class="sigtxt">TOL. ±0.5 mm — BS 5385‑3</text>
+            <line x1="40" y1="96" x2="200" y2="96" class="sig" stroke-width="1"/>
+          </svg>
+        </div>
+        <figcaption>
+          <span class="label">Fig. 04</span>
+          <span class="label">Lippage at threshold · ceramic on screed</span>
+          <span class="label plate-no">Δ 2.4 mm · tol ±0.5 mm</span>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 05 SPACING / GRID (inverted) ===================== -->
+<section class="invert">
+  <div class="wrap">
+    <div class="shead">
+      <span class="label num"><span class="plate-no">PLATE 05</span></span>
+      <hr class="rule" aria-hidden="true">
+      <span class="label">Spacing &amp; grid — the graticule underneath</span>
+    </div>
+    <div class="split">
+      <div class="stack reveal" style="--sp:1.5rem">
+        <p class="measure">An 8‑point base with a 4‑point half-step. Every margin, gap and rhythm resolves to it, so spacing can’t drift. A 12‑column grid, wide outer margins, a hard ~1200px measure — the whitespace lives in the margins and in the vertical rhythm between sections. This block is the dark theme, built from the same tokens.</p>
+        <div class="ruler" aria-hidden="true">
+          <div class="bar" style="height:8px"><span>8</span></div>
+          <div class="bar" style="height:16px"><span>16</span></div>
+          <div class="bar" style="height:24px"><span>24</span></div>
+          <div class="bar" style="height:40px"><span>40</span></div>
+          <div class="bar" style="height:64px"><span>64</span></div>
+          <div class="bar" style="height:96px"><span>96</span></div>
+          <div class="bar" style="height:120px"><span>128</span></div>
+        </div>
+      </div>
+      <div class="reveal" style="align-self:center; width:100%">
+        <span class="label">12‑column field</span>
+        <div class="gridcard" style="margin-top:1rem; border-color:rgba(255,255,255,0.14);"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 06 MOTION ===================== -->
+<section>
+  <div class="wrap">
+    <div class="shead">
+      <span class="label num"><span class="plate-no">PLATE 06</span></span>
+      <hr class="rule" aria-hidden="true">
+      <span class="label">Motion — an instrument settling</span>
+    </div>
+    <div class="split">
+      <h2 class="h2 reveal">If you notice it,<br>it’s wrong.</h2>
+      <div class="stack reveal" style="--sp:1.5rem">
+        <p class="measure">The only routine motion is the restrained fade-and-rise you’ve been reading through — opacity and a 14px lift, mechanically eased, 400–600ms, no spring overshoot. Overshoot is the opposite of “measured.” One signature gesture per page; everything else holds still. <span class="mono" style="color:var(--ink)">prefers-reduced-motion</span> is honoured completely.</p>
+        <div class="chips">
+          <span class="tok mono">duration <b>200–600ms</b></span>
+          <span class="tok mono">ease <b>0.16, 1, 0.3, 1</b></span>
+          <span class="tok mono">lift <b>14px</b></span>
+          <span class="tok mono">spring <b>none</b></span>
+          <span class="tok mono">off critical path</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="foot">
+  <section>
+    <div class="wrap">
+      <div class="shead">
+        <span class="label num"><span class="plate-no">PLATE 07</span></span>
+        <hr class="rule" aria-hidden="true">
+        <span class="label">Decisions to lock before Phase 1</span>
+      </div>
+      <div class="split">
+        <p class="lead reveal" style="max-width:24ch;">Five answers close every ambiguity.</p>
+        <ol class="reveal">
+          <li>Name — a principal’s surname to build the mark around, or a coined abstract mark. <em>Recommendation: a surname; expert credibility is personal.</em></li>
+          <li>Signal accent — instrument red (recommended) or blueprint blue.</li>
+          <li>Photography — accept forensic-over-architectural, and budget a small commissioned defect + portrait shoot.</li>
+          <li>A serif for long-form report / Insights contexts — in or out.</li>
+          <li>Content — confirm MDX-in-repo for launch, CMS deferred to real demand.</li>
+        </ol>
+      </div>
+      <div style="margin-top:clamp(3rem,6vw,5rem);" class="mono label">END OF DOCUMENT · DD‑01 REV A · FOR REVIEW</div>
+    </div>
+  </section>
+</footer>
+
+<script>
+  (function () {
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var els = document.querySelectorAll('.reveal');
+    if (reduce || !('IntersectionObserver' in window)) {
+      els.forEach(function (e) { e.classList.add('in'); });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+    els.forEach(function (e) { io.observe(e); });
+  })();
+</script>
